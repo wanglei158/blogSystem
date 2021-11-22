@@ -1,6 +1,6 @@
 # blogblog
 
-> A Vue.js+Node+MySQL的个人博客系统 project
+> A Vue.js+Node+MySQL的个人博客系统 project, 作业
 
 ## Build Setup
 
