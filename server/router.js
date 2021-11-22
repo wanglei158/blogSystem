@@ -45,7 +45,7 @@ router.post('/userLogin',(req,res,next)=>{
   api.userLogin(req,res,next);
 })
 
-router.get('/admin/getArticleById',(req,res,next)=>{
+router.get('/getArticleById',(req,res,next)=>{
   api.getArticleById(req,res,next);
 })
 
@@ -53,9 +53,6 @@ router.get('/admin/getTagAll',(req,res,next)=>{
   api.getTagAll(req,res,next);
 })
 
-// router.get('/admin/getTag',(req,res,next)=>{
-//   api.getTag(req,res,next);
-// })
 
 router.post('/admin/delTag',(req,res,next)=>{
   api.delTag(req,res,next);

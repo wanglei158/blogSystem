@@ -1,34 +1,17 @@
 var sqlMap = {
   article: {
-    queryById: 'SELECT a.*, GROUP_CONCAT(c.id, "_", c.name) AS tag_string FROM articles AS a LEFT JOIN tag_links AS b ON a.id = b.aid LEFT JOIN tags AS c ON b.tid = c.id WHERE a.id = ? GROUP BY a.id',
+    queryById: 'select * from articles where id = ?',
     queryAll22: 'SELECT a.*, GROUP_CONCAT(c.id, "_", c.name) AS tag_string FROM articles AS a LEFT JOIN tag_links AS b ON a.id = b.aid LEFT JOIN tags AS c ON b.tid = c.id GROUP BY a.id',
     delById: 'DELETE FROM articles WHERE id = ?',
     updById: 'UPDATE articles SET state=? WHERE id = ?',
-    updAllById: 'UPDATE articles SET state=?,title=?,type=?,summary=? WHERE id = ?',
+    updAllById: 'UPDATE articles SET title=?,summary=?,shtml=? WHERE id = ?',
     queryAll: 'SELECT SQL_CALC_FOUND_ROWS * from articles WHERE state =? order by post_time desc limit ?, ?;SELECT FOUND_ROWS() as count',
     queryAllBysu: 'SELECT SQL_CALC_FOUND_ROWS * from articles WHERE state =? AND username =? order by post_time desc limit ?, ?;SELECT FOUND_ROWS() as count',
     queryAllBySU: 'SELECT * from articles WHERE state =? AND username =?',
     insertComment: 'UPDATE articles SET comments=? WHERE id=?',
     updateViewCount: 'UPDATE articles SET view=?,comment_count=? where id=?',
     insert: 'INSERT INTO articles(username, title,summary,shtml,type, post_time, view, comment_count,state) VALUES (?,?,?,?,?,?,?,?,?)',
-    queryByTitle: 'SELECT * FROM articles WHERE title = ?',
-    queryByTagId: "SELECT " +
-      "c.*, ( " +
-      "SELECT " +
-      "GROUP_CONCAT(aa.id, '_', aa. NAME) " +
-      "FROM " +
-      "tags AS aa " +
-      "LEFT JOIN tag_links AS bb ON aa.id = bb.tid " +
-      "WHERE " +
-      "bb.aid = c.id " +
-      ") AS tag_string " +
-      "FROM " +
-      "tags AS a " +
-      "LEFT JOIN tag_links AS b ON a.id = b.tid " +
-      "LEFT JOIN articles AS c ON b.aid = c.id " +
-      "WHERE " +
-      "a.id = ? " +
-      "AND c.id IS NOT NULL"
+    queryByTitle: 'SELECT * FROM articles WHERE title = ?'
   },
   tag: {
     queryById: 'SELECT * FROM articles WHERE id=?',

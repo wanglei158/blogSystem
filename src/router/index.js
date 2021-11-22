@@ -18,11 +18,6 @@ export default new Router({
       component: resolve => require(['@/components/pages/Contents'], resolve)
     },
     {
-      path: '/lables',
-      name: 'Lables',
-      component: resolve => require(['@/components/pages/Lables'], resolve)
-    },
-    {
       path: '/login',
       name: 'Login',
       component: resolve => require(['@/components/pages/Login'], resolve)
@@ -47,14 +42,6 @@ export default new Router({
             requireAuth: true,  
           },
           component: resolve => require(['@/components/admin/NewEssay'], resolve)
-        },
-        {
-          path: 'tags',
-          name: 'tags',
-          meta: {
-            requireAuth: true, 
-          },
-          component: resolve => require(['@/components/admin/Tags'], resolve)
         },
         {
           path: 'settings',

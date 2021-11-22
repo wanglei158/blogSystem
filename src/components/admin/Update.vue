@@ -11,19 +11,7 @@
         ref="md"
       />
       <el-row style="margin-bottom:20px">
-        <el-col :span="16">
-          <el-select
-            v-model="tags"
-            multiple
-            :popper-append-to-body="false"
-            placeholder="请选择标签"
-            style="width:100%"
-          >
-            <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.name"></el-option>
-          </el-select>
-        </el-col>
         <el-col :span="6" :offset="2">
-          <el-button type="primary" size="medium" @click="saveArticle">存为草稿</el-button>
           <el-button type="primary" size="medium" @click="publish">发布</el-button>
         </el-col>
       </el-row>
@@ -61,13 +49,13 @@ export default {
         save: true, // 保存（触发events中的save事件）
         navigation: true // 导航目录
       },
-      options: [],
       tags: [],
       username: ""
     };
   },
   methods: {
     publish() {
+      let html = this.$refs.md.d_render;
       if (this.title.length < 1) {
         this.$message({
           message: "标题不能为空",
@@ -78,19 +66,13 @@ export default {
           message: "内容不能为空",
           type: "warning"
         });
-      } else if (this.tags.length < 1) {
-        this.$message({
-          message: "请选择标签",
-          type: "warning"
-        });
       } else {
         this.axios
           .post("/api/admin/updArticle", {
             id: this.draft.id,
             title: this.title,
             content: this.context,
-            tags: JSON.stringify(this.tags),
-            state: 1
+            html
           })
           .then(response => {
             if (response.data.status == true) {
@@ -127,48 +109,6 @@ export default {
          */
         this.$refs.md.$img2Url(pos, response.data.url);
       });
-    },
-    saveArticle() {
-      if (this.title.length < 1) {
-        this.$message({
-          message: "标题不能为空",
-          type: "warning"
-        });
-      } else if (this.context.length < 1) {
-        this.$message({
-          message: "内容不能为空",
-          type: "warning"
-        });
-      } else if (this.tags.length < 1) {
-        this.$message({
-          message: "请选择标签",
-          type: "warning"
-        });
-      } else {
-        this.axios
-          .post("/api/admin/updArticle", {
-            id:this.draft.id,
-            username: this.username,
-            title: this.title,
-            content: this.context,
-            tags: JSON.stringify(this.tags),
-            state: 0
-          })
-          .then(response => {
-            if (response.data.status == true) {
-              this.$message({
-                message: "保存成功",
-                type: "success"
-              });
-              this.$router.push({ path: "/admin/settings" });
-            } else if (response.data.status == false) {
-              this.$message.error("保存失败");
-            }
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      }
     }
   },
   mounted() {
@@ -177,15 +117,6 @@ export default {
     this.title = this.draft.title;
     this.context = this.draft.summary;
     this.username = sessionStorage.getItem("username");
-    this.axios
-      .get("/api/admin/getTagAll")
-      .then(response => {
-        let data = response.data;
-        this.options = data;
-      })
-      .catch(error => {
-        console.log(error);
-      });
   }
 };
 </script>

@@ -3,49 +3,49 @@
     <Header></Header>
     <section class="blog-body">
       <div class="detail">
-        <h1 class="detail-title">{{article.title}}</h1>
+        <h1 class="detail-title">{{ article.title }}</h1>
         <div class="detail-content">
           <p v-html="article.shtml"></p>
         </div>
         <p class="detail-tags"></p>
         <div class="detail-admin">
-          <p>发布于 {{article.post_time | formatDate('yyyy-MM-dd')}}</p>
-          <p>浏览{{article.view}}次</p>
+          <p>发布于 {{ article.post_time }}</p>
+          <p>浏览{{ article.view }}次</p>
         </div>
         <div>
-          <el-tag
-            type="info"
-            style="border:none;margin-right:10px"
-            v-for="tag in tags"
-            :key="tag"
-          >{{tag}}</el-tag>
           <div class="blog-comment">
             <div class="comment-list">
               <ul>
-                <li v-for="(item,index) in commentList" :key="index">
+                <li v-for="(item, index) in commentList" :key="index">
                   <div class="list-header clearfix">
                     <div class="header-reply">
-                      <span>{{item.username}}</span>
+                      <span>{{ item.username }}</span>
                     </div>
-                    <span class="header-time">{{item.postTime| formatDate('yyyy-MM-dd')}}</span>
+                    <span class="header-time">{{ item.postTime }}</span>
                   </div>
                   <div class="list-content">
-                    <p>{{item.comment}}</p>
+                    <p>{{ item.comment }}</p>
                   </div>
                 </li>
               </ul>
             </div>
-            <div v-show="islogin==true" style="margin-top:10px">
-              <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="textarea"></el-input>
+            <div v-show="islogin == true" style="margin-top:10px">
+              <el-input
+                type="textarea"
+                :rows="2"
+                placeholder="请输入内容"
+                v-model="textarea"
+              ></el-input>
               <el-button
                 type="primary"
                 size="small"
                 plain
                 style="margin-top:10px;margin-left: 89%;"
                 @click="refer"
-              >提交留言</el-button>
+                >提交留言</el-button
+              >
             </div>
-            <div class="comment-unlogin" v-show="islogin==false">
+            <div class="comment-unlogin" v-show="islogin == false">
               <el-button type="primary" @click="tologin">登录</el-button>
               <p>欢迎留言交流</p>
             </div>
@@ -62,7 +62,7 @@ import Footer from "./Footer.vue";
 export default {
   data() {
     return {
-      article: [],
+      article: {},
       textarea: "",
       islogin: false,
       comments: [], //要传的数组
@@ -77,6 +77,12 @@ export default {
     tologin() {
       this.$router.push({ path: "/login" });
     },
+    async getContent() {
+      const { articleId } = this.$route.query
+      const res = await this.axios.get('/api/getArticleById?id=' + articleId)
+      this.article = res.data
+      this.commentList = JSON.parse(this.article.comments) || [];
+    },
     refer() {
       if (this.textarea.length < 1) {
         this.$message({
@@ -85,7 +91,7 @@ export default {
         });
       } else {
         let username = this.username;
-        let postTime = new Date().getTime();
+        let postTime = new Date().toLocaleString();
         if (this.commentList.length > 0) {
           for (let item of this.commentList) {
             this.comments.push(item);
@@ -117,16 +123,11 @@ export default {
     }
   },
   mounted() {
+    this.getContent()
     this.username = sessionStorage.getItem("username") || "";
     if (this.username.length > 0) {
       this.islogin = true;
     }
-    this.article = this.$route.query.article;
-    let str = this.article.type
-      .substring(1, this.article.type.length - 1)
-      .replace(/\"/g, "");
-    this.tags = str.split(",");
-    this.commentList = JSON.parse(this.article.comments) || [];
     this.axios
       .post("/api/updateCount", {
         view: this.article.view + 1,

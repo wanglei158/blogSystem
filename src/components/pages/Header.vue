@@ -2,27 +2,12 @@
   <div class="header-wraper">
     <header class="blog-header">
       <h1 class="header-title">
-        <router-link to="/">StarBlog</router-link>
+        <router-link to="/">Blog</router-link>
       </h1>
       <nav class="header-nav">
-        <el-input
-          placeholder="请输入搜索内容"
-          prefix-icon="el-icon-search"
-          v-model="search"
-          class="nav-search"
-          autocomplete="off"
-          name="aa"
-        ></el-input>
-        <!-- <div class="nav-search">
-          <i class="wmui icon-search"></i>
-          <input type="text" maxlength="30" value>
-        </div>-->
         <ul>
           <li>
-            <router-link to="/lables">标签</router-link>
-          </li>
-          <li>
-            <router-link to="/login">新随笔</router-link>
+            <a @click="toNewArticle" href="javascript:void(0);">新随笔</a>
           </li>
         </ul>
       </nav>
@@ -36,6 +21,16 @@ export default {
     return {
       search: ""
     };
+  },
+  methods: {
+    toNewArticle() {
+      const token = sessionStorage.getItem('token')
+      if (token) {
+        this.$router.push({ path: '/admin/newEssay' })
+      } else {
+        this.$router.push({ path: '/login' })
+      }
+    }
   }
 };
 </script>

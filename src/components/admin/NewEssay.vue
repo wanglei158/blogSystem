@@ -11,17 +11,6 @@
         ref="md"
       />
       <el-row style="margin-bottom:20px">
-        <el-col :span="16">
-          <el-select
-            v-model="tags"
-            multiple
-            :popper-append-to-body="false"
-            placeholder="请选择标签"
-            style="width:100%"
-          >
-            <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.name"></el-option>
-          </el-select>
-        </el-col>
         <el-col :span="6" :offset="2">
           <el-button type="primary" size="medium" @click="saveArticle">存为草稿</el-button>
           <el-button type="primary" size="medium" @click="publish">发布</el-button>
@@ -60,7 +49,6 @@ export default {
         htmlcode: true, // 展示html源码
         navigation: true // 导航目录
       },
-      options: [],
       tags: [],
       username: ""
     };
@@ -77,11 +65,6 @@ export default {
           message: "内容不能为空",
           type: "warning"
         });
-      } else if (this.tags.length < 1) {
-        this.$message({
-          message: "请选择标签",
-          type: "warning"
-        });
       } else {
         let html = this.$refs.md.d_render;
         this.axios
@@ -90,7 +73,6 @@ export default {
             title: this.title,
             content: this.context,
             html:html,
-            tags: JSON.stringify(this.tags),
             state:1
           })
           .then(response => {
@@ -180,15 +162,6 @@ export default {
   mounted() {
     // console.log(window.document.getElementsByClassName('v-show-content-html')[0].innerHTML())
     this.username = sessionStorage.getItem("username");
-    this.axios
-      .get("/api/admin/getTagAll")
-      .then(response => {
-        let data = response.data;
-        this.options = data;
-      })
-      .catch(error => {
-        console.log(error);
-      });
   }
 };
 </script>

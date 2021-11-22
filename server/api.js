@@ -41,6 +41,9 @@ module.exports = {
     pool.getConnection((err, connection) => {
       let postData = req.body;
       connection.query(sqlMap.user.queryUsername, [postData.username], (err, result) => {
+        if (err) {
+          return console.log('出错', err)
+        }
         if (result.length !== 0) {
           res.json({
             status: false,
@@ -100,72 +103,14 @@ module.exports = {
       })
     })
   },
-  // 标签
-  getTagAll(req, res, next) {
-    pool.getConnection((err, connection) => {
-      connection.query(sqlMap.tag.queryAll, (err, result) => {
-        res.json(result);
-        connection.release();
-      })
-    })
-  },
-  // getTag(req, res, next) {
-  //   pool.getConnection((err, connection) => {
-  //     connection.query(sqlMap.tag.queryById, (err, result) => {
-  //       res.json(result);
-  //       connection.release();
-  //     })
-  //   })
-  // },
-  delTag(req, res, next) {
-    pool.getConnection((err, connection) => {
-      let postData = req.body;
-      connection.query(sqlMap.tag.delById, [postData.name], (err, result) => {
-        res.json({
-          status: true,
-          msg: '删除成功'
-        })
-        connection.release();
-      })
-    })
-  },
-  updateTag(req, res, next) {
-    pool.getConnection((err, connection) => {
-      let postData = req.body;
-      connection.query(sqlMap.tag.updateById, (err, result) => {
-        res.json(result);
-        connection.release();
-      })
-    })
-  },
-  insertTag(req, res, next) {
-    pool.getConnection((err, connection) => {
-      let postData = req.body;
-      connection.query(sqlMap.tag.queryByName, [postData.name], (err, result) => {
-        if (result.length > 0) {
-          res.json({
-            status: false,
-            msg: '标签，名字已经存在',
-          });
-          connection.release();
-        } else {
-          connection.query(sqlMap.tag.insert, [postData.name], (err, result) => {
-            res.json({
-              status: true,
-              msg: '添加成功'
-            });
-            connection.release();
-          })
-          // connection.release();
-        }
-      })
-    })
-  },
   getArticleById(req, res, next) {
     let postData = req.query;
     pool.getConnection((err, connection) => {
-      connection.query(sqlMap.tag.queryById, [postData.id], (err, result) => {
-        res.json(result);
+      if (err) {
+        return console.log('出错：', err)
+      }
+      connection.query(sqlMap.article.queryById, [postData.id], (err, result) => {
+        res.json(result[0]);
         connection.release();
       })
     })
@@ -173,8 +118,8 @@ module.exports = {
   // 上传图片
   uploadPic(req, res, next) {
     let file = req.file,
-      url = '/api/upload/' + file.filename;  
-      // 'http://' + req.headers.host + 
+      url = '/api/upload/' + file.filename;
+    // 'http://' + req.headers.host + 
     res.send({ resultCode: '1', url });
   },
   // 读取图片
@@ -185,7 +130,7 @@ module.exports = {
   addArticle(req, res, next) {
     pool.getConnection((err, connection) => {
       let postData = req.body,
-        creat_at = new Date().getTime(),
+        creat_at = new Date().toLocaleString(),
         title = postData.title;
       connection.query(sqlMap.article.queryByTitle, [title], (err, result) => {
         if (result.length > 0) {
@@ -216,7 +161,9 @@ module.exports = {
   //所有文章
   getArticle(req, res, next) {
     pool.getConnection((err, connection) => {
-
+      if (err) {
+        console.log('出错：', err)
+      }
       let postData = req.query;//get请求参数在query里
       let pageNum = parseInt(postData.pageNum || 1);// 页码
       let end = parseInt(postData.pageSize || 5); // 默认页数
@@ -240,12 +187,15 @@ module.exports = {
   // 阅读量、点赞量 +1
   addViewOrStart(req, res, next) {
     pool.getConnection((err, connection) => {
+      if (err) {
+        return console.log('出错：', err)
+      }
       let postData = req.body;
       connection.query(sqlMap.article.updateViewCount, [postData.view, postData.count, postData.id], (err, result) => {
         res.send('ok');
       })
+      connection.release()
     })
-    connection.release()
   },
   //改变文章状态
   updateArticle(req, res, next) {
@@ -271,7 +221,7 @@ module.exports = {
   updArticle(req, res, next) {
     pool.getConnection((err, connection) => {
       let postData = req.body;
-      connection.query(sqlMap.article.updAllById, [postData.state, postData.title, postData.tags, postData.content, postData.id], (err, result) => {
+      connection.query(sqlMap.article.updAllById, [postData.title, postData.content, postData.html, postData.id], (err, result) => {
         if (err !== null) {
           res.json({
             status: false,
@@ -312,6 +262,9 @@ module.exports = {
     pool.getConnection((err, connection) => {
       let postData = req.body;
       connection.query(sqlMap.article.insertComment, [postData.comments, postData.id], (err, result) => {
+        if (err) {
+          return console.log('出错：', err)
+        }
         if (err) {
           res.json({
             status: false,

@@ -2,33 +2,26 @@
   <section>
     <Header></Header>
     <section class="blog-body">
-      <p v-if="flag==0" class="nothing">Nothing</p>
+      <p v-if="flag == 0" class="nothing">Nothing</p>
       <div v-else class="blog-list">
         <ul class="list-article">
-          <li class="article" v-for="(article,index) in articleList" :key="article.id">
+          <li class="article" v-for="article in articleList" :key="article.id">
             <div class="article-header">
               <h2 class="article-title">
-                <!-- <router-link to="{path:'/contents',query:{id:article.id}}" class="title-link">{{article.title}}</router-link> -->
-                <span class="title-link" @click="tocontent(article)">{{article.title}}</span>
-                <el-tag
-                  size="mini"
-                  hit
-                  v-for="tag in tags[index]"
-                  :key="tag"
-                  style="margin-right:10px"
-                >{{tag}}</el-tag>
+                <span class="title-link" @click="tocontent(article)">{{
+                  article.title
+                }}</span>
               </h2>
-              <p class="article-body">{{article.summary | cutString(180)}}</p>
             </div>
             <div class="article-footer">
               <span class="iconfont icon-riqi icons">
-                <span class="content">{{article.post_time | formatDate('yyyy-MM-dd')}}</span>
+                <span class="content">{{ article.post_time }}</span>
               </span>
               <span class="iconfont icon-chakantiezihuifu icons">
-                <span class="content">{{article.comment_count}}评论</span>
+                <span class="content">{{ article.comment_count }}评论</span>
               </span>
               <span class="iconfont icon-yanjing icons">
-                <span class="content">{{article.view}}阅读量</span>
+                <span class="content">{{ article.view }}阅读量</span>
               </span>
             </div>
           </li>
@@ -65,7 +58,7 @@ export default {
   components: { Header, Footer },
   methods: {
     tocontent(article) {
-      this.$router.push({ path: "/contents", query: { article } });
+      this.$router.push({ path: "/contents", query: { articleId: article.id } });
     },
     handleCurrentChange(val) {
       // console.log(`当前页: ${val}`);
@@ -99,9 +92,9 @@ export default {
     }
   },
   beforeRouteEnter(to, from, next) {
-      next(vm=>{
-        vm.article=to.query.article
-      })
+    next(vm => {
+      vm.article = to.query.article
+    })
   },
   mounted() {
     this.getData(this.pageNum, this.pageSize);
